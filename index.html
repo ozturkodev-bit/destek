@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destek ve Hareket Sistemi Öğrenme Portalı</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            border-color: #3498db;
+        }
+
+        .card i {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .card-description {
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .content-section {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .back-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #c0392b;
+            transform: translateX(-5px);
+        }
+
+        /* Flashcard Styles */
+        .flashcard-container {
+            width: 100%;
+            max-width: 700px;
+            height: 400px;
+            perspective: 1500px;
+            margin: 20px auto;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+            cursor: pointer;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front,
+        .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            box-sizing: border-box;
+            border-radius: 20px;
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        .flashcard-front {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+
+        .flashcard-back {
+            background: linear-gradient(45deg, #ffffff, #f8f9fa);
+            color: #2c3e50;
+            transform: rotateY(180deg);
+            border: 3px solid #9b59b6;
+        }
+
+        .flashcard-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .flashcard-btn {
+            padding: 12px 25px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .flashcard-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        /* Mind Map Styles */
+        .mindmap {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .mindmap-node {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .mindmap-node:hover {
+            transform: translateY(-5px);
+        }
+
+        .mindmap-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .mindmap-content {
+            list-style-type: none;
+        }
+
+        .mindmap-content li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #ddd;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .mindmap-content li:before {
+            content: "•";
+            color: #3498db;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Test Styles */
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #2ecc71;
+            transition: transform 0.3s;
+        }
+
+        .question-card:hover {
+            transform: translateX(5px);
+        }
+
+        .question-number {
+            display: inline-block;
+            background: #2ecc71;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 15px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .option:hover {
+            background: #f1f8ff;
+            border-color: #3498db;
+        }
+
+        .option.selected {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .option.wrong {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .option-letter {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .option.selected .option-letter {
+            background: white;
+            color: #3498db;
+        }
+
+        .test-result {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            margin: 0 auto 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .score-total {
+            opacity: 0.8;
+        }
+
+        /* Summary Styles */
+        .summary-content {
+            max-width: 900px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .summary-section {
+            margin-bottom: 30px;
+            background: linear-gradient(to right, #f8f9fa, #ffffff);
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+        .summary-section:hover {
+            transform: translateX(10px);
+        }
+
+        .summary-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-title i {
+            color: #3498db;
+        }
+
+        .summary-list {
+            list-style-type: none;
+            padding-left: 10px;
+        }
+
+        .summary-list li {
+            margin: 12px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .summary-list li:before {
+            content: "✓";
+            color: #2ecc71;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #856404;
+            font-weight: 600;
+        }
+
+        .important-note {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .diagram-note {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        /* Progress and Stats */
+        .progress-container {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .flashcard-container {
+                height: 350px;
+            }
+            
+            .mindmap {
+                grid-template-columns: 1fr;
+            }
+            
+            .flashcard-controls {
+                flex-wrap: wrap;
+            }
+            
+            .option {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-bone"></i> Destek ve Hareket Sistemi Öğrenme Portalı</h1>
+            <div class="subtitle">4 farklı öğrenme yöntemi ile konuyu keşfedin</div>
+            <div class="progress-container" id="progress-container">
+                <div class="progress-info">
+                    <span><i class="fas fa-check-circle"></i> Tamamlanan: <span id="completed-count">0</span>/4</span>
+                    <span><i class="fas fa-chart-line"></i> İlerleme: <span id="progress-percent">0%</span></span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard -->
+        <div class="dashboard" id="dashboard">
+            <div class="card" id="flashcard-btn">
+                <i class="fas fa-layer-group"></i>
+                <div class="card-title">Bilgi Kartları</div>
+                <div class="card-description">78 adet soru-cevap kartı ile konuyu tekrar edin ve bilgilerinizi test edin.</div>
+            </div>
+            
+            <div class="card" id="mindmap-btn">
+                <i class="fas fa-project-diagram"></i>
+                <div class="card-title">Zihin Haritası</div>
+                <div class="card-description">Konunun ana hatlarını görsel olarak öğrenin ve bağlantıları keşfedin.</div>
+            </div>
+            
+            <div class="card" id="test-btn">
+                <i class="fas fa-file-alt"></i>
+                <div class="card-title">Test Çöz</div>
+                <div class="card-description">50 soruluk detaylı test ile bilgilerinizi sınayın ve performansınızı görün.</div>
+            </div>
+            
+            <div class="card" id="summary-btn">
+                <i class="fas fa-book"></i>
+                <div class="card-title">Detaylı Özet</div>
+                <div class="card-description">Konunun tüm detaylarını kapsamlı özet şeklinde tekrar edin.</div>
+            </div>
+        </div>
+
+        <!-- Flashcard Section -->
+        <div class="content-section" id="flashcard-section">
+            <button class="back-btn" id="back-from-flashcards">
+                <i class="fas fa-arrow-left"></i> Ana Menüye Dön
+            </button>
+            <h2 style="color: #2c3e50; text-align: center; margin-bottom: 20px;">
+                <i class="fas fa-layer-group"></i> Bilgi Kartları
+            </h2>
+            
+            <div class="flashcard-container">
+                <div class="flashcard" id="flashcard">
+                    <div class="flashcard-front">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">❓</div>
+                        <div class="question" id="question" style="font-size: 1.5rem; font-weight: 600; line-height: 1.6;">
+                            Soru buraya gelecek
+                        </div>
+                        <div style="margin-top: 30px; opacity: 0.8; font-size: 0.9rem;">
+                            <i class="fas fa-mouse-pointer"></i> Kartı çevirmek için tıklayın
+                        </div>
+                    </div>
+                    <div class="flashcard-back">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">💡</div>
+                        <div class="answer" id="answer" style="font-size: 1.4rem; line-height: 1.6;">
+                            Cevap buraya gelecek
+                        </div>
+                        <div style="margin-top: 30px; opacity: 0.8; font-size: 0.9rem;">
+                            <i class="fas fa-redo"></i> Tekrar çevirmek için tıklayın
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flashcard-controls">
+                <button class="flashcard-btn" id="prev-btn">
+                    <i class="fas fa-arrow-left"></i> Önceki
+                </button>
+                <button class="flashcard-btn" id="flip-btn">
+                    <i class="fas fa-sync-alt"></i> Kartı Çevir
+                </button>
+                <button class="flashcard-btn" id="next-btn">
+                    Sonraki <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="flashcard-btn" id="shuffle-btn" style="background: #e74c3c;">
+                    <i class="fas fa-random"></i> Karıştır
+                </button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px; color: #666; font-size: 1.1rem;">
+                <span id="current-card">1</span> / <span id="total-cards">78</span> Kart
+            </div>
+        </div>
+
+        <!-- Mind Map Section -->
+        <div class="content-section" id="mindmap-section">
+            <button class="back-btn" id="back-from-mindmap">
+                <i class="fas fa-arrow-left"></i> Ana Menüye Dön
+            </button>
+            <h2 style="color: #2c3e50; text-align: center; margin-bottom: 20px;">
+                <i class="fas fa-project-diagram"></i> Destek ve Hareket Sistemi Zihin Haritası
+            </h2>
+            
+            <div class="mindmap">
+                <!-- Zihin haritası içeriği aynı kalacak -->
+                <div class="mindmap-node">
+                    <div class="mindmap-title">Kıkırdak Doku</div>
+                    <ul class="mindmap-content">
+                        <li>Sinir ve kan damarı içermez</li>
+                        <li>Hücreleri: Kondrosit</li>
+                        <li>Ara madde: Kondrin</li>
+                        <li><strong>Çeşitleri:</strong></li>
+                        <li>• Hiyalin kıkırdak</li>
+                        <li>• Elastik kıkırdak</li>
+                        <li>• Fibröz kıkırdak</li>
+                    </ul>
+                </div>
+                
+                <!-- Diğer mindmap node'ları... -->
+                <div class="mindmap-node">
+                    <div class="mindmap-title">Kemik Doku</div>
+                    <ul class="mindmap-content">
+                        <li><strong>Hücreleri:</strong></li>
+                        <li>• Osteosit (canlı kemik hücresi)</li>
+                        <li>• Osteoblast (kemik yapım)</li>
+                        <li>• Osteoklast (kemik yıkım)</li>
+                        <li><strong>Yapısal Çeşitleri:</strong></li>
+                        <li>• Sıkı (sert) kemik doku</li>
+                        <li>• Süngerimsi kemik doku</li>
+                    </ul>
+                </div>
+                
+                <div class="mindmap-node">
+                    <div class="mindmap-title">Kemik Çeşitleri</div>
+                    <ul class="mindmap-content">
+                        <li><strong>Uzun kemikler:</strong> Kol, bacak, parmak</li>
+                        <li><strong>Kısa kemikler:</strong> El-ayak bilekleri</li>
+                        <li><strong>Yassı kemikler:</strong> Kafatası, kaburga</li>
+                        <li><strong>Düzensiz kemikler:</strong> Omur, yüz kemikleri</li>
+                        <li>Epifiz plağı → boyuna büyüme</li>
+                        <li>Kırmızı ilik → kan üretimi</li>
+                    </ul>
+                </div>
+                
+                <div class="mindmap-node">
+                    <div class="mindmap-title">Eklemler</div>
+                    <ul class="mindmap-content">
+                        <li><strong>Oynamaz eklem:</strong> Kafatası</li>
+                        <li><strong>Yarı oynar (az oynar):</strong> Omurlar</li>
+                        <li><strong>Oynar eklem:</strong> Kol-bacak</li>
+                        <li>Bağlayıcı yapı: Ligament</li>
+                        <li>Eklem kıkırdağı → hareket kolaylığı</li>
+                    </ul>
+                </div>
+                
+                <div class="mindmap-node">
+                    <div class="mindmap-title">Kas Çeşitleri</div>
+                    <ul class="mindmap-content">
+                        <li><strong>İskelet kası (çizgili):</strong></li>
+                        <li>• İsteğe bağlı çalışır</li>
+                        <li>• Hızlı kasılır, çabuk yorulur</li>
+                        <li>• Miyoglobin pigmenti</li>
+                        <li><strong>Düz kas:</strong></li>
+                        <li>• İsteğimiz dışında çalışır</li>
+                        <li>• Yavaş ve düzenli</li>
+                        <li><strong>Kalp kası:</strong></li>
+                        <li>• Ritmik çalışır</li>
+                        <li>• Yapı olarak iskelet kası</li>
+                    </ul>
+                </div>
+                
+                <div class="mindmap-node">
+                    <div class="mindmap-title">Kasılma Mekanizması</div>
+                    <ul class="mindmap-content">
+                        <li>Motor uç plak → asetilkolin</li>
+                        <li>Ca⁺⁺ iyonları salınır</li>
+                        <li>Kayan iplikler modeli</li>
+                        <li>Aktin üzerinde miyozin kayar</li>
+                        <li><strong>Enerji Kaynakları:</strong></li>
+                        <li>1. ATP</li>
+                        <li>2. Kreatin fosfat</li>
+                        <li>3. Glikoz/Glikojen</li>
+                        <li>Laktik asit → yorgunluk</li>
+                    </ul>
+                </div>
+                
+                <div class="mindmap-node">
+                    <div class="mindmap-title">Hastalıklar</div>
+                    <ul class="mindmap-content">
+                        <li><strong>Kırık:</strong> Kemik bütünlüğü bozulması</li>
+                        <li><strong>Çıkık:</strong> Eklem yerinden ayrılma</li>
+                        <li><strong>Burkulma:</strong> Bağların zorlanması</li>
+                        <li><strong>Menisküs:</strong> Diz kıkırdağı yırtılması</li>
+                        <li><strong>Artrit:</strong> Eklem iltihabı</li>
+                        <li><strong>Raşitizm:</strong> D vitamini eksikliği (çocuk)</li>
+                        <li><strong>Osteomalazi:</strong> D vitamini eksikliği (yetişkin)</li>
+                    </ul>
+                </div>
+                
+                <div class="mindmap-node">
+                    <div class="mindmap-title">Sağlıklı Kalma</div>
+                    <ul class="mindmap-content">
+                        <li>Dengeli beslenme</li>
+                        <li>Düzenli spor</li>
+                        <li>Duruş pozisyonları</li>
+                        <li>Güneş ışığı (D vitamini)</li>
+                        <li>Kalsiyum alımı</li>
+                        <li>Kaza önlemleri</li>
+                        <li>Bel-karın egzersizleri</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Section -->
+        <div class="content-section" id="test-section">
+            <button class="back-btn" id="back-from-test">
+                <i class="fas fa-arrow-left"></i> Ana Menüye Dön
+            </button>
+            <h2 style="color: #2c3e50; text-align: center; margin-bottom: 20px;">
+                <i class="fas fa-file-alt"></i> Destek ve Hareket Sistemi Testi (50 Soru)
+            </h2>
+            
+            <div class="test-container" id="test-container">
+                <!-- Test questions will be loaded here -->
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="flashcard-btn" id="submit-test" style="background: #2ecc71; padding: 15px 40px; font-size: 1.1rem;">
+                    <i class="fas fa-paper-plane"></i> Testi Bitir ve Sonuçları Gör
+                </button>
+                <button class="flashcard-btn" id="clear-selections" style="background: #f39c12; margin-left: 10px;">
+                    <i class="fas fa-eraser"></i> Seçimleri Temizle
+                </button>
+            </div>
+            
+            <div class="test-result" id="test-result">
+                <div class="score-circle">
+                    <div class="score-number" id="score">0</div>
+                    <div class="score-total">/ 50</div>
+                </div>
+                <h3 style="margin-bottom: 15px; font-size: 1.8rem;">Test Sonuçlarınız</h3>
+                <div id="test-message" style="font-size: 1.2rem; margin-bottom: 20px;"></div>
+                <div id="detailed-result" style="margin-bottom: 20px;"></div>
+                <button class="back-btn" id="restart-test" style="margin-top: 15px; background: white; color: #3498db; padding: 12px 25px;">
+                    <i class="fas fa-redo"></i> Testi Yeniden Başlat
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="content-section" id="summary-section">
+            <button class="back-btn" id="back-from-summary">
+                <i class="fas fa-arrow-left"></i> Ana Menüye Dön
+            </button>
+            <h2 style="color: #2c3e50; text-align: center; margin-bottom: 20px;">
+                <i class="fas fa-book"></i> Destek ve Hareket Sistemi Detaylı Özet
+            </h2>
+            
+            <div class="summary-content">
+                <div class="summary-section">
+                    <div class="summary-title"><i class="fas fa-info-circle"></i> TEMEL KAVRAMLAR</div>
+                    <ul class="summary-list">
+                        <li>Destek ve hareket sistemi: İnsan vücudunda şekil oluşturan, dayanıklılık sağlayan ve hareketi gerçekleştiren sistem</li>
+                        <li><span class="highlight">4 temel yapı:</span> Kemik, eklem, kıkırdak ve kas yapıları</li>
+                        <li>İskelet sistemi: Kıkırdak doku + Kemik doku'dan oluşur</li>
+                        <li>Kıkırdak doku: Özel bir bağ dokusu, sinir ve kan damarı <span class="highlight">içermez</span></li>
+                        <li>Kondrosit: Kıkırdak hücreleri, Kondrin: Ara madde</li>
+                        <li>3 kıkırdak çeşidi: Hiyalin (basınca dayanıklı), Elastik (esnek), Fibröz (çekmeye dayanıklı)</li>
+                    </ul>
+                    <div class="important-note">
+                        <strong>📌 Önemli Not:</strong> Embriyonik dönemdeki iskelet hiyalin kıkırdaktan oluşur, zamanla kemikleşir.
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-title"><i class="fas fa-bone"></i> KEMİK DOKU YAPISI</div>
+                    <ul class="summary-list">
+                        <li><span class="highlight">Kemik sertliği:</span> %40-45 inorganik tuzlar (Ca⁺⁺, Mg⁺⁺, fosfat, karbonat)</li>
+                        <li><span class="highlight">Kemik esnekliği:</span> %30 organik maddeler (osein)</li>
+                        <li><span class="highlight">Su oranı:</span> Gençlerde %20-25, yaşlılarda azalır</li>
+                        <li><strong>Kemik hücreleri:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li><span class="highlight">Osteosit:</span> Canlı kemik hücresi</li>
+                                <li><span class="highlight">Osteoblast:</span> Kemik yapım hücresi (osteosit oluşturur)</li>
+                                <li><span class="highlight">Osteoklast:</span> Kemik yıkım hücresi</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">Periost (Kemik zarı):</span> Sinir ve kan damarı içerir. Kemik hücre oluşumu, enine büyüme ve onarım</li>
+                        <li><span class="highlight">Kemik doku çeşitleri:</span> Sıkı (sert) kemik doku + Süngerimsi kemik doku</li>
+                        <li><span class="highlight">Havers kanalı:</span> Kan damarları ve sinirler için boyuna kanal</li>
+                        <li><span class="highlight">Volkmann kanalları:</span> Havers kanallarını birbirine bağlayan yan kanallar</li>
+                    </ul>
+                    <div class="diagram-note">
+                        <strong>🔍 Yapısal Hatırlatma:</strong> Sıkı kemik doku → tüm kemiklerin dış yüzeyi, uzun kemiklerin gövdesi | Süngerimsi kemik doku → uzun kemik başları, diğer kemiklerin içi
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-title"><i class="fas fa-shapes"></i> KEMİK ÇEŞİTLERİ VE ÖZELLİKLERİ</div>
+                    <ul class="summary-list">
+                        <li><span class="highlight">1. Uzun Kemikler:</span> Kol, bacak, parmak kemikleri
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>İki ucu şişkin, silindir şekilli</li>
+                                <li>Epifiz plağı (büyüme diski) → boyuna büyüme</li>
+                                <li>Baş kısım → süngerimsi doku + kırmızı kemik iliği</li>
+                                <li>Gövde kısım → sarı kemik iliği (akyuvar üretimi)</li>
+                                <li>Uyluk kemiği → vücuttaki en uzun kemik</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">2. Kısa Kemikler:</span> El-ayak bilek kemikleri
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>En, boy, kalınlık yaklaşık eşit</li>
+                                <li>Sadece kırmızı kemik iliği</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">3. Yassı Kemikler:</span> Kafatası, kürek, köprücük, kaburga
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>Geniş yüzey alanı</li>
+                                <li>Süngerimsi doku > Sıkı doku</li>
+                                <li>Sadece kırmızı kemik iliği</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">4. Düzensiz Şekilli Kemikler:</span> Omur, bazı yüz kemikleri
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>Belirgin şekil yok</li>
+                                <li>Baskılara dirençli</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="important-note">
+                        <strong>💡 İlik Bilgisi:</strong> Kırmızı kemik iliği → kan hücreleri üretimi (eritrosit, lökosit, trombosit) | Sarı kemik iliği → yağ deposu ve akyuvar üretimi
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-title"><i class="fas fa-link"></i> EKLEMLER VE ÇEŞİTLERİ</div>
+                    <ul class="summary-list">
+                        <li><span class="highlight">Eklem:</span> İki veya daha fazla kemiğin birleşim alanı</li>
+                        <li><span class="highlight">Ligament:</span> Kemikleri birbirine bağlayan bağ dokusu</li>
+                        <li><strong>Hareket Yeteneklerine Göre Eklemler:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li><span class="highlight">1. Oynamaz Eklem:</span> Kafatası, yüz kemikleri (alt çene hariç). Hareket <span class="highlight">yok</span></li>
+                                <li><span class="highlight">2. Yarı Oynar (Az Oynar):</span> Omurlar arası. Sınırlı hareket</li>
+                                <li><span class="highlight">3. Oynar Eklem:</span> Kol-bacak eklemleri. Tam hareket. Eklem kıkırdağı içerir</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">Eklem kıkırdağı:</span> Hareketi kolaylaştırır, sürtünmeyi azaltır</li>
+                        <li><span class="highlight">Sinovyal sıvı:</span> Oynar eklemlerde bulunur, kayganlık sağlar</li>
+                    </ul>
+                    <div class="diagram-note">
+                        <strong>🏃‍♂️ Hareket Mekanizması:</strong> Eklemler + Kaslar + Sinir sistemi koordinasyonu → hareket
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-title"><i class="fas fa-dumbbell"></i> KAS ÇEŞİTLERİ VE YAPISI</div>
+                    <ul class="summary-list">
+                        <li><span class="highlight">Kas hücresi terminolojisi:</span>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>Sarkolemma → kas hücresi zarı</li>
+                                <li>Sarkoplazma → kas hücresi sitoplazması</li>
+                                <li>Sarkoplazmik retikulum → Ca⁺⁺ depolayan ER</li>
+                            </ul>
+                        </li>
+                        <li><strong>1. İskelet Kası (Çizgili Kas):</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>İsteğe bağlı çalışır (somatik sinir sistemi)</li>
+                                <li>Hızlı kasılır, çabuk yorulur</li>
+                                <li>Çok çekirdekli, çekirdekler kenarda</li>
+                                <li>Miyoglobin pigmenti → kırmızı renk, oksijen depolama</li>
+                                <li>Aktin + miyozin düzenli → çizgili görünüm</li>
+                                <li>Kollar, bacaklar, sırt, karın, yüz</li>
+                            </ul>
+                        </li>
+                        <li><strong>2. Düz Kas:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>İsteğimiz dışında çalışır (otonom sinir sistemi)</li>
+                                <li>Yavaş ve düzenli kasılır</li>
+                                <li>Tek çekirdekli, çekirdek ortada</li>
+                                <li>Aktin + miyozin dağınık → bantlaşma yok</li>
+                                <li>Mide, bağırsak, damarlar, idrar torbası</li>
+                            </ul>
+                        </li>
+                        <li><strong>3. Kalp Kası:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>İsteğimiz dışında, ritmik çalışır</li>
+                                <li>Dallanmış silindirik yapı</li>
+                                <li>1-2 çekirdek, çekirdek ortada</li>
+                                <li>Yapı olarak iskelet kasına, çalışma olarak düz kasa benzer</li>
+                                <li>Kendi uyarı sistemine sahip (sinir gerekmez)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="important-note">
+                        <strong>🔬 Mikroyapı:</strong> Miyofibriller → aktin (ince, açık) + miyozin (kalın, koyu) protein iplikleri
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-title"><i class="fas fa-bolt"></i> KASILMA MEKANİZMASI DETAYLARI</div>
+                    <ul class="summary-list">
+                        <li><span class="highlight">Motor uç plak:</span> Sinir hücresi - kas hücresi bağlantı noktası</li>
+                        <li><span class="highlight">Nörotransmitter:</span> Asetilkolin veya noradrenalin salgılanır</li>
+                        <li><span class="highlight">Kasılma süreci:</span>
+                            <ol style="margin-left: 20px;">
+                                <li>Uyarı → motor uç plak</li>
+                                <li>Asetilkolin salgılanır</li>
+                                <li>Na⁺ kanalları açılır</li>
+                                <li>Sarkoplazmik retikulumdan Ca⁺⁺ salınır</li>
+                                <li>Ca⁺⁺ aktin-miyozin arasına dağılır</li>
+                                <li>ATPaz aktifleşir → ATP hidrolizi</li>
+                                <li>Aktin üzerinde miyozin kayar → kasılma</li>
+                            </ol>
+                        </li>
+                        <li><span class="highlight">Kayan iplikler modeli (Huxley):</span> Kasılma mekanizması</li>
+                        <li><span class="highlight">Sarkomer:</span> Kasılma birimi (iki Z çizgisi arası)</li>
+                        <li><strong>Bant yapısı:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li><span class="highlight">I bandı:</span> Sadece aktin, açık renkli</li>
+                                <li><span class="highlight">A bandı:</span> Aktin + miyozin, koyu renkli</li>
+                                <li><span class="highlight">H bandı:</span> Sadece miyozin, A bandının ortası</li>
+                                <li><span class="highlight">Z çizgisi:</span> Sarkomer sınırı</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">Kasılma sırasında:</span> A bandı <span class="highlight">değişmez</span>, I bandı daralır, H bandı daralır/kaybolur</li>
+                        <li><span class="highlight">Kasılma evreleri:</span> Gizli evre → Kasılma evresi → Gevşeme evresi</li>
+                        <li><span class="highlight">Kas tonusu:</span> Bilinçli durumda hafif kasılı olma</li>
+                        <li><span class="highlight">Fizyolojik tetanos:</span> Sürekli uyarı ile kasılı kalma</li>
+                    </ul>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-title"><i class="fas fa-battery-full"></i> ENERJİ KAYNAKLARI VE METABOLİZMA</div>
+                    <ul class="summary-list">
+                        <li><span class="highlight">Enerji kaynakları sırası:</span>
+                            <ol style="margin-left: 20px;">
+                                <li><span class="highlight">ATP</span> (hazır, hızlı ama az miktarda)</li>
+                                <li><span class="highlight">Kreatin fosfat</span> (hızlı kasılmalar için)</li>
+                                <li><span class="highlight">Glikoz/Glikojen</span> (uzun süreli kasılma)</li>
+                            </ol>
+                        </li>
+                        <li><span class="highlight">ATP sentezi:</span>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>Oksijenli solunum → verimli ama yavaş</li>
+                                <li>Laktik asit fermantasyonu → hızlı ama verimsiz</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">Laktik asit:</span> Fermantasyon sonucu oluşur, kaslarda birikir → yorgunluk hissi</li>
+                        <li><span class="highlight">Metabolik denge:</span>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>Dinlenmede → laktik asit karaciğerde glikoza dönüşür</li>
+                                <li>Oksijen borcu → kasılma sonrası fazla oksijen tüketimi</li>
+                            </ul>
+                        </li>
+                        <li><span class="highlight">Kas yorgunluğu nedenleri:</span>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>ATP tükenmesi</li>
+                                <li>Laktik asit birikimi</li>
+                                <li>Glikojen tükenmesi</li>
+                                <li>İyon dengesizliği</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="important-note">
+                        <strong>⚡ Kimyasal Denklemler:</strong> ATP + H₂O → ADP + Pi + Enerji | Kreatin fosfat + ADP → Kreatin + ATP
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-title"><i class="fas fa-user-md"></i> HASTALIKLAR VE RAHATSIZLIKLAR</div>
+                    <ul class="summary-list">
+                        <li><strong>Kemik Hastalıkları:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li><span class="highlight">Raşitizm:</span> Çocuklarda D vitamini eksikliği → kemik eğriliği</li>
+                                <li><span class="highlight">Osteomalazi:</span> Yetişkinlerde D vitamini eksikliği → kemik yumuşaması</li>
+                                <li><span class="highlight">Osteoporoz:</span> Kemik dokuda azalma, kırık riski artışı</li>
+                            </ul>
+                        </li>
+                        <li><strong>Mekanik Rahatsızlıklar:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li><span class="highlight">Kırık:</span> Kemik bütünlüğünün bozulması</li>
+                                <li><span class="highlight">Çıkık:</span> Eklem yerinden ayrılma</li>
+                                <li><span class="highlight">Burkulma:</span> Bağların zorlanması/yırtılması</li>
+                                <li><span class="highlight">Menisküs:</span> Diz eklemi kıkırdağı yırtılması</li>
+                            </ul>
+                        </li>
+                        <li><strong>İnflamatuar Rahatsızlıklar:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li><span class="highlight">Artrit:</span> Eklem iltihabı, ağrı, şişme</li>
+                                <li><span class="highlight">Osteoartrit:</span> Eklem kıkırdağı yıpranması</li>
+                                <li><span class="highlight">Romatoid artrit:</span> Otoimmün eklem iltihabı</li>
+                            </ul>
+                        </li>
+                        <li><strong>Diğer Rahatsızlıklar:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li><span class="highlight">Skolyoz:</span> Omurga eğriliği</li>
+                                <li><span class="highlight">Kifoz:</span> Kamburluk</li>
+                                <li><span class="highlight">Lordoz:</span> Bel çukuru artışı</li>
+                                <li><span class="highlight">Tendinit:</span> Tendon iltihabı</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="diagram-note">
+                        <strong>🏥 Tedavi Yaklaşımları:</strong> Fizik tedavi, ilaç tedavisi, cerrahi müdahale, rehabilitasyon, koruyucu önlemler
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-title"><i class="fas fa-heartbeat"></i> SAĞLIKLI KALMA İPUÇLARI VE KORUNMA</div>
+                    <ul class="summary-list">
+                        <li><strong>Beslenme:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>Kalsiyum kaynakları: Süt, peynir, yoğurt, yeşil yapraklı sebzeler</li>
+                                <li>Protein kaynakları: Et, balık, yumurta, baklagiller</li>
+                                <li>D vitamini: Güneş ışığı, yağlı balıklar, yumurta sarısı</li>
+                                <li>Fosfor: Et, süt, tahıllar, kuruyemişler</li>
+                                <li>Magnezyum: Yeşil sebzeler, kuruyemişler, tam tahıllar</li>
+                            </ul>
+                        </li>
+                        <li><strong>Egzersiz ve Spor:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>Düzenli egzersiz → kemik yoğunluğu artışı</li>
+                                <li>Kas güçlendirme → eklem koruma</li>
+                                <li>Esneklik egzersizleri → hareket açıklığı</li>
+                                <li>Kardiyovasküler egzersiz → dolaşım düzenleme</li>
+                            </ul>
+                        </li>
+                        <li><strong>Duruş ve Ergonomi:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>Dik oturma pozisyonu</li>
+                                <li>Doğru yatış pozisyonları</li>
+                                <li>Uygun masa-sandalye yüksekliği</li>
+                                <li>Ağır kaldırırken dizleri bükme</li>
+                            </ul>
+                        </li>
+                        <li><strong>Koruyucu Önlemler:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>Kazalardan korunma</li>
+                                <li>Uygun spor ekipmanı kullanma</li>
+                                <li>Isınma ve soğuma egzersizleri</li>
+                                <li>Düzenli sağlık kontrolleri</li>
+                            </ul>
+                        </li>
+                        <li><strong>Yaşam Tarzı:</strong>
+                            <ul style="margin-left: 20px; list-style-type: circle;">
+                                <li>Sigara ve alkolden uzak durma</li>
+                                <li>Stres yönetimi</li>
+                                <li>Yeterli uyku</li>
+                                <li>Kilo kontrolü</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="important-note">
+                        <strong>🎯 Hedef:</strong> Sağlıklı bir destek ve hareket sistemi için dengeli beslenme + düzenli egzersiz + doğru duruş + koruyucu önlemler
+                    </div>
+                </div>
+                
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard Navigation
+        document.getElementById('flashcard-btn').addEventListener('click', () => {
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('flashcard-section').classList.add('active');
+            updateProgress('flashcard');
+        });
+
+        document.getElementById('mindmap-btn').addEventListener('click', () => {
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('mindmap-section').classList.add('active');
+            updateProgress('mindmap');
+        });
+
+        document.getElementById('test-btn').addEventListener('click', () => {
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('test-section').classList.add('active');
+            loadTestQuestions();
+            updateProgress('test');
+        });
+
+        document.getElementById('summary-btn').addEventListener('click', () => {
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('summary-section').classList.add('active');
+            updateProgress('summary');
+        });
+
+        // Back buttons
+        document.getElementById('back-from-flashcards').addEventListener('click', () => {
+            document.getElementById('flashcard-section').classList.remove('active');
+            document.getElementById('dashboard').style.display = 'grid';
+        });
+
+        document.getElementById('back-from-mindmap').addEventListener('click', () => {
+            document.getElementById('mindmap-section').classList.remove('active');
+            document.getElementById('dashboard').style.display = 'grid';
+        });
+
+        document.getElementById('back-from-test').addEventListener('click', () => {
+            document.getElementById('test-section').classList.remove('active');
+            document.getElementById('dashboard').style.display = 'grid';
+            document.getElementById('test-result').style.display = 'none';
+        });
+
+        document.getElementById('back-from-summary').addEventListener('click', () => {
+            document.getElementById('summary-section').classList.remove('active');
+            document.getElementById('dashboard').style.display = 'grid';
+        });
+
+        // Progress Tracking
+        const completedSections = new Set();
+        
+        function updateProgress(section) {
+            if (!completedSections.has(section)) {
+                completedSections.add(section);
+                const count = completedSections.size;
+                const percent = Math.round((count / 4) * 100);
+                
+                document.getElementById('completed-count').textContent = count;
+                document.getElementById('progress-percent').textContent = percent + '%';
+                document.getElementById('progress-fill').style.width = percent + '%';
+            }
+        }
+
+        // FLASHCARD SYSTEM
+        const csvData = `Destek ve hareket sistemini oluşturan temel yapılar nelerdir?,"Kemik, eklem, kıkırdak ve kas yapılarıdır."
+İnsanda iskelet sistemi hangi iki dokudan oluşur?,Kıkırdak doku ve kemik dokudan oluşur.
+Kıkırdak doku hücrelerine ne ad verilir?,Kondrosit denir.
+Kondrosit adı verilen kıkırdak hücrelerinin içinde yer aldığı ara maddeye ne denir?,Kondrin denir.
+Kıkırdak dokunun sinir ve kan damarı içerip içermediğini belirtiniz.,Kıkırdak doku sinir ve kan damarı içermez.
+Vücutta bulunan üç çeşit kıkırdak dokusu hangileridir?,"Hiyalin kıkırdak, elastik kıkırdak ve fibröz kıkırdaktır."
+Kolajen lif açısından zengin olan ve basınca karşı dayanıklı olan kıkırdak çeşidi hangisidir?,Hiyalin kıkırdaktır.
+Embriyonik dönemdeki iskelet hangi kıkırdak çeşidinden oluşmuştur?,Hiyalin kıkırdaktan oluşmuştur.
+Hiyalin kıkırdağın ergin bireylerde bulunduğu yerlere üç örnek veriniz.,"Kaburga uçları, oynar eklem yüzeyleri, soluk borusu, burun ve bronşlar."
+Çok miktarda elastik lif içerdiği için esneme ve bükülme yeteneği fazla olan kıkırdak çeşidi _____ kıkırdaktır.,elastik
+Kulak kepçesi ve östaki borusunda bulunan kıkırdak çeşidi hangisidir?,Elastik kıkırdaktır.
+"Omurlar arası disklerde bulunan, basınca ve çekmeye karşı dayanıklı kıkırdak türü nedir?",Fibröz kıkırdaktır.
+Kemiğin sert yapısını sağlayan temel bileşenler nelerdir?,"Yapısındaki inorganik madensel tuzlar (kalsiyum, magnezyum, fosfat ve karbonat hâlindeki tuzlar)."
+Kemikte esnekliği sağlayan madde grubu hangisidir?,Organik maddelerdir.
+Yaşlılıkta kemiklerin daha kolay kırılmasının sebebi nedir?,Kemik dokusundaki yıkımın yapımdan fazla olmasıyla inorganik madde oranının artmasıdır.
+Canlı kemik hücrelerine verilen ad nedir?,Osteosit.
+Kemik hücreleri tarafından salgılanan ve kemik dokusunun ara maddesini oluşturan yapıya ne denir?,Osein denir.
+Kemik yıkımını gerçekleştiren hücreler hangileridir?,Osteokast hücreleridir.
+Kemik yapımını sağlayan ve osteositleri oluşturan hücreler hangileridir?,Osteoblastlardır.
+"Kemiklerin dış kısmında bulunan, sinir ve kan damarı içeren zara ne ad verilir?",Periost denir.
+Periostun (kemik zarı) görevleri nelerdir?,"Kemik hücrelerinin oluşumunu, kemiğin enine büyümesini ve onarımını sağlar."
+"Kemik doku, yapısal olarak hangi iki çeşitten oluşur?",Sıkı (sert) kemik doku ve süngerimsi kemik dokudan oluşur.
+Sıkı kemik dokusunda kan damarlarının ve sinirlerin geçtiği boyuna uzanan kanallara ne denir?,Havers kanalı denir.
+Havers kanallarını birbirine bağlayan yan kanalların adı nedir?,Volkmann kanallarıdır.
+"Kan hücrelerinin yapıldığı kırmızı kemik iliği, hangi kemik dokusu çeşidinde bulunur?",Süngerimsi kemik dokuda bulunur.
+Şekillerine göre kemikler kaç gruba ayrılır ve bunlar nelerdir?,"Dört gruba ayrılır: uzun, kısa, yassı ve düzensiz şekilli kemikler."
+Uzun kemiğin başı ile gövdesi arasında bulunan ve kemiğin boyuna büyümesini sağlayan kıkırdak yapıya ne denir?,Epifiz plağı (büyüme diski) denir.
+Sadece uzun kemiklerin gövde kısmındaki kanalda bulunan ve akyuvar oluşumunu sağlayan yapı nedir?,Sarı kemik iliğidir.
+"Kan hücrelerinin üretildiği kırmızı kemik iliği, uzun kemiğin hangi bölümünde bulunur?",Baş kısımlarındaki süngerimsi kemik dokunun gözeneklerinde bulunur.
+Kısa ve yassı kemiklerde sarı kemik iliği bulunur mu?,"Hayır, bulunmaz; sadece kırmızı kemik iliği bulunur."
+"Kafatası, kürek ve kaburga kemikleri şekillerine göre hangi kemik grubuna aittir?",Yassı kemikler grubuna aittir.
+"Omur ve bazı yüz kemikleri, belirgin bir şekilleri olmadığı için hangi kemik grubuna dahil edilir?",Düzensiz şekilli kemikler grubuna dahil edilir.
+Kalsiyumun kemikten kana ve kandan kemiğe geçişini düzenleyen hormonlar hangi bezlerden salgılanır?,Tiroit ve paratiroit bezlerinden salgılanır.
+D vitamini eksikliğinde çocuklarda görülen kemik hastalığına ne ad verilir?,Raşitizm denir.
+D vitamini eksikliğinde yetişkinlerde kemiklerde yumuşama ve eğilme ile ortaya çıkan hastalığın adı nedir?,Osteomalazi olarak isimlendirilir.
+İki veya daha çok kemiğin birleşim alanlarına ne denir?,Eklem denir.
+Kemikleri birbirine bağlayan bağ dokusu yapılarına ne ad verilir?,Ligament denir.
+Hareket yeteneklerine göre eklemler kaça ayrılır?,"Üçe ayrılır: oynar eklem, az oynar eklem ve oynamaz eklem."
+Kafatası ve yüzdeki (alt çene hariç) eklemler hareket yeteneklerine göre hangi gruba girer?,Oynamaz eklem grubuna girer.
+"Boyun ve bel omurları arasında bulunan, hareketi sınırlı eklemler hangi tiptir?",Yarı oynar (az oynar) eklemdir.
+"Kas hücrelerinin zarına _____, sitoplazmasına _____ denir.","sarkolemma, sarkoplazma"
+Kas hücrelerinde fazla miktarda $Ca^{++}$ depolayan endoplazmik retikuluma ne ad verilir?,Sarkoplazmik retikulum denir.
+Miyofibriller hangi iki protein iplikçiğinden oluşur?,Aktin ve miyozin denilen proteinlerden oluşur.
+"İsteğimize bağlı olarak çalışan, hızlı kasılıp çabuk yorulan kas çeşidi hangisidir?",İskelet kası (çizgili kas).
+İskelet kası hücrelerinin çok çekirdekli mi yoksa tek çekirdekli mi olduğunu belirtiniz.,Çok çekirdeklidir ve çekirdekler kenarda yer alır.
+İskelet kaslarına kırmızı rengini veren ve oksijen depolayan pigmentin adı nedir?,Miyoglobindir.
+Aktin ve miyozin miyofibrillerinin dağınık olmasından dolayı bantlaşma göstermeyen kas çeşidi hangisidir?,Düz kastır.
+"Mide, bağırsak gibi iç organların yapısında bulunan, isteğimiz dışında yavaş ve düzenli çalışan kas türü nedir?",Düz kastır.
+"Yapı olarak iskelet kasına, çalışma prensibi olarak düz kasa benzeyen kas çeşidi hangisidir?",Kalp kasıdır.
+Kalp kası hücrelerinin yapısal özelliği nedir?,"Dallanmış silindirik yapıdadır, bir veya iki çekirdeklidir ve çekirdekler ortadadır."
+Bir kas telinin kasılmasını sağlayan en küçük uyarı şiddetine ne denir?,Eşik şiddeti denir.
+"Kasların, eşik şiddetindeki ve üzerindeki uyarılara her zaman aynı şiddette tepki vermesi prensibine ne ad verilir?",Ya hep ya hiç prensibi denir.
+Uyarılan bir kasın bir kez kasılıp gevşeyerek eski hâlini almasına ne denir?,Kas sarsı (kasılma sarsı) adı verilir.
+Kasın uyarıldığı an ile kasılmanın başladığı an arasında geçen süreye ne ad verilir?,Gizli evre denir.
+Bilinçli durumlarda iskelet kaslarının daima hafif kasılı olma durumuna ne denir?,Kas tonusu denir.
+Kasın gevşemeye fırsat bulamadan sürekli uyarılması sonucu kasılı kalması durumuna ne ad verilir?,Fizyolojik tetanos denir.
+Huxley tarafından ileri sürülen ve kasılmayı açıklayan modelin adı nedir?,Kayan iplikler modeli.
+Kasılma birimi olarak adlandırılan ve iki Z çizgisi arasında kalan bölgeye ne denir?,Sarkomer denir.
+"Sarkomerde sadece aktin filamentlerinin bulunduğu, açık renkli bölgeye ne ad verilir?",I bandı olarak adlandırılır.
+"Sarkomerde hem aktin hem de miyozin ipliklerinin bulunduğu, koyu renkli bölgeye ne ad verilir?",A bandı olarak adlandırılır.
+A bandının ortasında yer alan ve sadece miyozin iplikçiklerinden oluşan kısım _____ olarak adlandırılır.,H bandı
+Kas kasılması sırasında boyu değişmeyen bant hangisidir?,A bandının boyu değişmez.
+Kas kasılması sırasında daralan veya kaybolan bant ve bölgeler hangileridir?,I bandı daralır ve H bandı daralır ya da kaybolur.
+Kas kasılması sırasında kasın hacmi ve kütlesi değişir mi?,"Hayır, kasın hacminde ve kütlesinde değişme olmaz."
+Motor sinir hücresiyle kas hücresi arasındaki bağlantı bölgesine ne ad verilir?,Motor uç plak olarak adlandırılır.
+Motor nörondan motor plağa salgılanan ve kasılmayı başlatan nörotransmitter maddeye örnek veriniz.,Asetilkolin veya noradrenalin.
+Kas kasılmasının başlaması için sarkoplazmik retikulumdan sitoplazmaya salınan iyon hangisidir?,Kalsiyum ($Ca^{++}$) iyonlarıdır.
+Kas gevşemesi sırasında $Ca^{++}$ iyonları sarkoplazmik retikuluma hangi taşıma şekliyle geri döner?,Aktif taşıma ile geri döner.
+Kas kasılması için gerekli enerji sırasıyla hangi kaynaklardan sağlanır?,"Önce ATP, sonra kreatin fosfat, sonra glikoz (glikojenden) kullanılır."
+Hızlı kas kasılmalarında ATP ihtiyacını karşılamak için kullanılan yüksek enerjili fosfat bileşiği nedir?,Kreatin fosfattır.
+Fermantasyon sonucu kaslarda birikerek yorgunluk hissine neden olan madde nedir?,Laktik asittir.
+"Çizgili kas demetlerinin kemiklere bağlandığı, bağ dokusundan yapılmış yapılara ne denir?",Kas kirişi ya da tendon denir.
+Biri kasılırken diğeri gevşeyen kas çiftlerine ne ad verilir?,Antagonist kaslar denir.
+Aynı anda kasılıp aynı anda gevşeyen kaslara ne denir ve hangi kaslar örnek verilebilir?,Sinerjist kaslar denir; sırt ve karın kasları örnektir.
+Kemik dokunun bütünlüğünün bozulması durumuna ne ad verilir?,Kırık denir.
+Kemiklerin eklem yerlerinden ayrılması durumuna ne ad verilir?,Çıkık denir.
+Diz ekleminde bulunan menisküs denilen kıkırdakların yırtılmasıyla oluşan rahatsızlık nedir?,Menisküs.
+Eklem rahatsızlığı: Artrit,"Tanım: Eklemlerin şişmesi, iltihaplanması sonucu kıkırdak dokunun pürüzlenmesi ile oluşan ve ağrıya neden olan rahatsızlıktır."`;
+
+        // Process CSV data
+        const lines = csvData.split('\n');
+        const flashcards = lines.map(line => {
+            let parts = [];
+            let inQuotes = false;
+            let currentPart = '';
+            
+            for (let i = 0; i < line.length; i++) {
+                if (line[i] === '"') {
+                    inQuotes = !inQuotes;
+                } else if (line[i] === ',' && !inQuotes) {
+                    parts.push(currentPart);
+                    currentPart = '';
+                } else {
+                    currentPart += line[i];
+                }
+            }
+            parts.push(currentPart);
+            
+            const question = parts[0].replace(/^"|"$/g, '').trim();
+            const answer = parts[1].replace(/^"|"$/g, '').trim();
+            
+            return { question, answer };
+        });
+
+        // Flashcard variables
+        let currentCardIndex = 0;
+        const totalCards = flashcards.length;
+
+        // DOM elements for flashcards
+        const flashcardElement = document.getElementById('flashcard');
+        const questionElement = document.getElementById('question');
+        const answerElement = document.getElementById('answer');
+        const currentCardElement = document.getElementById('current-card');
+        const totalCardsElement = document.getElementById('total-cards');
+        const prevButton = document.getElementById('prev-btn');
+        const nextButton = document.getElementById('next-btn');
+        const flipButton = document.getElementById('flip-btn');
+        const shuffleButton = document.getElementById('shuffle-btn');
+
+        // Initialize flashcards
+        totalCardsElement.textContent = totalCards;
+        loadCard();
+
+        function loadCard() {
+            const currentCard = flashcards[currentCardIndex];
+            questionElement.textContent = currentCard.question;
+            answerElement.textContent = currentCard.answer;
+            currentCardElement.textContent = currentCardIndex + 1;
+            flashcardElement.classList.remove('flipped');
+        }
+
+        // Flashcard event listeners
+        prevButton.addEventListener('click', () => {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                loadCard();
+            }
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (currentCardIndex < totalCards - 1) {
+                currentCardIndex++;
+                loadCard();
+            }
+        });
+
+        flipButton.addEventListener('click', () => {
+            flashcardElement.classList.toggle('flipped');
+        });
+
+        flashcardElement.addEventListener('click', () => {
+            flashcardElement.classList.toggle('flipped');
+        });
+
+        shuffleButton.addEventListener('click', () => {
+            for (let i = flashcards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [flashcards[i], flashcards[j]] = [flashcards[j], flashcards[i]];
+            }
+            currentCardIndex = 0;
+            loadCard();
+        });
+
+        // TEST SYSTEM - 50 Questions with 5 options each
+        const testQuestions = [
+            {
+                question: "Kıkırdak dokunun hücrelerine ne ad verilir?",
+                options: ["Osteosit", "Kondrosit", "Osteoblast", "Osteoklast", "Fibroblast"],
+                correct: 1,
+                explanation: "Kıkırdak dokunun hücrelerine kondrosit denir. Osteosit kemik hücresidir."
+            },
+            {
+                question: "Aşağıdaki kıkırdak çeşitlerinden hangisi kulak kepçesinde bulunur?",
+                options: ["Hiyalin kıkırdak", "Elastik kıkırdak", "Fibröz kıkırdak", "Kıkırdak yoktur", "Hem hiyalin hem elastik"],
+                correct: 1,
+                explanation: "Kulak kepçesinde elastik kıkırdak bulunur çünkü esneme yeteneği fazladır."
+            },
+            {
+                question: "Kemiğin sert yapısını sağlayan temel bileşenler nelerdir?",
+                options: [
+                    "Organik maddeler",
+                    "İnorganik madensel tuzlar",
+                    "Proteinler",
+                    "Yağlar",
+                    "Karbonhidratlar"
+                ],
+                correct: 1,
+                explanation: "Kalsiyum, magnezyum, fosfat gibi inorganik tuzlar kemik sertliğini sağlar."
+            },
+            {
+                question: "Aşağıdaki kemik hücrelerinden hangisi kemik yapımını sağlar?",
+                options: ["Osteosit", "Osteoblast", "Osteoklast", "Kondrosit", "Kondroblast"],
+                correct: 1,
+                explanation: "Osteoblastlar kemik yapımını sağlayan hücrelerdir. Osteosit olgun kemik hücresidir."
+            },
+            {
+                question: "Kemiklerin dış kısmında bulunan ve sinir-kan damarı içeren zarın adı nedir?",
+                options: ["Periost", "Endost", "Epifiz", "Kondrin", "Osein"],
+                correct: 0,
+                explanation: "Periost (kemik zarı) sinir ve kan damarı içerir. Büyüme ve onarımı sağlar."
+            },
+            {
+                question: "Uzun kemiklerde boyuna büyümeyi sağlayan yapı nedir?",
+                options: [
+                    "Havers kanalı",
+                    "Epifiz plağı (büyüme diski)",
+                    "Volkmann kanalı",
+                    "Periost",
+                    "Medüller kanal"
+                ],
+                correct: 1,
+                explanation: "Epifiz plağı kemiğin boyuna büyümesini sağlar. Ergenlikten sonra kemikleşir."
+            },
+            {
+                question: "Kırmızı kemik iliği hangi kemiklerde bulunmaz?",
+                options: [
+                    "Yassı kemikler",
+                    "Kısa kemikler",
+                    "Düzensiz kemikler",
+                    "Sarı kemik iliği olan uzun kemik gövdesi",
+                    "Uzun kemik başları"
+                ],
+                correct: 3,
+                explanation: "Sarı kemik iliği uzun kemiklerin gövdesinde bulunur. Kırmızı ilik baş kısımlardadır."
+            },
+            {
+                question: "D vitamini eksikliğinde yetişkinlerde görülen kemik hastalığı nedir?",
+                options: ["Raşitizm", "Osteomalazi", "Osteoporoz", "Artrit", "Skolyoz"],
+                correct: 1,
+                explanation: "Yetişkinlerde D vitamini eksikliği osteomalaziye neden olur. Çocuklarda raşitizm görülür."
+            },
+            {
+                question: "Kafatası eklemleri hangi eklem grubuna girer?",
+                options: ["Oynar eklem", "Yarı oynar eklem", "Oynamaz eklem", "Hareketli eklem", "Tam hareketli eklem"],
+                correct: 2,
+                explanation: "Kafatası eklemleri oynamaz eklemdir. Alt çene hariç tüm kafatası eklemleri hareket etmez."
+            },
+            {
+                question: "Kas hücrelerinin sitoplazmasına ne ad verilir?",
+                options: ["Sarkolemma", "Sarkoplazma", "Miyoplazma", "Kondroplazma", "Ostoplazma"],
+                correct: 1,
+                explanation: "Kas hücresinin sitoplazmasına sarkoplazma denir. Zarına sarkolemma denir."
+            },
+            {
+                question: "Hangi kas çeşidi isteğimize bağlı çalışır?",
+                options: ["Düz kas", "Kalp kası", "İskelet kası", "Mide kası", "Bağırsak kası"],
+                correct: 2,
+                explanation: "İskelet kasları isteğimize bağlı çalışır. Düz kas ve kalp kası otonom sinir sistemi kontrolündedir."
+            },
+            {
+                question: "Kas kasılması için gerekli Ca⁺⁺ iyonları nereden salınır?",
+                options: [
+                    "Mitokondriden",
+                    "Sarkoplazmik retikulumdan",
+                    "Çekirdekten",
+                    "Golgi aygıtından",
+                    "Lizozomdan"
+                ],
+                correct: 1,
+                explanation: "Ca⁺⁺ iyonları sarkoplazmik retikulumdan salınır. Bu kasın endoplazmik retikulumudur."
+            },
+            {
+                question: "Huxley'in kasılmayı açıklayan modelinin adı nedir?",
+                options: [
+                    "Kasılma-genişleme modeli",
+                    "Kayan iplikler modeli",
+                    "Pompa modeli",
+                    "Dalga modeli",
+                    "Sarmal model"
+                ],
+                correct: 1,
+                explanation: "Huxley'in modeli kayan iplikler modelidir. Aktin üzerinde miyozin kayar."
+            },
+            {
+                question: "Kasılma birimi olan sarkomer nedir?",
+                options: [
+                    "İki A bandı arası",
+                    "İki Z çizgisi arası",
+                    "İki H bandı arası",
+                    "İki I bandı arası",
+                    "İki M çizgisi arası"
+                ],
+                correct: 1,
+                explanation: "Sarkomer iki Z çizgisi arasındaki bölgedir. Kasılma birimidir."
+            },
+            {
+                question: "Kas kasılması sırasında hangi bandın boyu değişmez?",
+                options: ["I bandı", "A bandı", "H bandı", "Z çizgisi", "M çizgisi"],
+                correct: 1,
+                explanation: "Kasılma sırasında A bandının boyu değişmez. I bandı daralır, H bandı kaybolur."
+            },
+            {
+                question: "Kas kasılmasında kullanılan enerji kaynakları sırasıyla hangisidir?",
+                options: [
+                    "ATP → Glikoz → Kreatin fosfat",
+                    "Kreatin fosfat → ATP → Glikoz",
+                    "ATP → Kreatin fosfat → Glikoz",
+                    "Glikoz → ATP → Kreatin fosfat",
+                    "Kreatin fosfat → Glikoz → ATP"
+                ],
+                correct: 2,
+                explanation: "Sıralama: ATP → Kreatin fosfat → Glikoz/Glikojen. ATP ilk, glikojen son kaynaktır."
+            },
+            {
+                question: "Kaslarda fermantasyon sonucu birikerek yorgunluk hissine neden olan madde nedir?",
+                options: ["Pirüvik asit", "Laktik asit", "Asetik asit", "Sitrik asit", "Malik asit"],
+                correct: 1,
+                explanation: "Laktik asit yorgunluk hissine neden olur. Karaciğerde tekrar glikoza dönüştürülür."
+            },
+            {
+                question: "Çizgili kasların kemiklere bağlandığı bağ dokusu yapısına ne denir?",
+                options: ["Ligament", "Tendon", "Periost", "Kondrin", "Fasya"],
+                correct: 1,
+                explanation: "Kas kirişi veya tendon kasların kemiğe bağlandığı yerdir. Ligament kemik-kemik bağlantısıdır."
+            },
+            {
+                question: "Bir kasılırken diğeri gevşeyen kas çiftlerine ne denir?",
+                options: ["Sinerjist kaslar", "Antagonist kaslar", "Agonist kaslar", "Pasif kaslar", "Koordineli kaslar"],
+                correct: 1,
+                explanation: "Antagonist kaslar zıt yönde çalışır. Örneğin biseps-triseps."
+            },
+            {
+                question: "Diz eklemindeki kıkırdak yırtılması hangi rahatsızlıktır?",
+                options: ["Artrit", "Menisküs", "Burkulma", "Çıkık", "Tendinit"],
+                correct: 1,
+                explanation: "Dizdeki kıkırdak yırtılması menisküstür. Spor yaralanmalarında sık görülür."
+            },
+            {
+                question: "Hangi vitamin kemiklerde kalsiyum ve fosfor birikimini sağlar?",
+                options: ["A vitamini", "B vitamini", "C vitamini", "D vitamini", "E vitamini"],
+                correct: 3,
+                explanation: "D vitamini kemiklerde Ca⁺⁺ ve P⁺ biriktirerek sertleşmeyi sağlar. Güneş ışığı ile aktifleşir."
+            },
+            {
+                question: "Aşağıdakilerden hangisi yassı kemiklere örnek değildir?",
+                options: ["Kaburga", "Kafatası", "Uyluk kemiği", "Kürek kemiği", "Kalça kemiği"],
+                correct: 2,
+                explanation: "Uyluk kemiği uzun kemiktir. Yassı kemikler geniş yüzey alanlı kemiklerdir."
+            },
+            {
+                question: "Kas hücresinde fazla miktarda Ca⁺⁺ depolayan yapı nedir?",
+                options: ["Mitokondri", "Sarkoplazmik retikulum", "Golgi aygıtı", "Çekirdek", "Lizozom"],
+                correct: 1,
+                explanation: "Sarkoplazmik retikulum kas hücresinin özelleşmiş endoplazmik retikulumudur, Ca⁺⁺ depolar."
+            },
+            {
+                question: "Hangi kıkırdak çeşidi omurlar arası disklerde bulunur?",
+                options: ["Hiyalin kıkırdak", "Elastik kıkırdak", "Fibröz kıkırdak", "Kıkırdak yoktur", "Hepsi"],
+                correct: 2,
+                explanation: "Fibröz kıkırdak omurlar arasında bulunur, basınca ve çekmeye dayanıklıdır."
+            },
+            {
+                question: "Kan hücrelerinin üretildiği kırmızı kemik iliği nerede bulunur?",
+                options: [
+                    "Uzun kemik gövdesinde",
+                    "Tüm kemiklerde eşit dağılımda",
+                    "Sadece yassı kemiklerde",
+                    "Süngerimsi kemik dokuda",
+                    "Periostta"
+                ],
+                correct: 3,
+                explanation: "Kırmızı kemik iliği süngerimsi kemik dokuda bulunur. Eritrosit, lökosit, trombosit üretimi."
+            },
+            {
+                question: "Kas kasılması sırasında hangisi doğrudur?",
+                options: [
+                    "Kasın hacmi artar",
+                    "Kasın kütlesi artar",
+                    "A bandının boyu değişmez",
+                    "Z çizgileri uzaklaşır",
+                    "H bandı genişler"
+                ],
+                correct: 2,
+                explanation: "Kasılma sırasında A bandının boyu değişmez. I bandı daralır, H bandı kaybolur."
+            },
+            {
+                question: "Motor uç plakta salgılanan nörotransmitter madde nedir?",
+                options: ["Dopamin", "Serotonin", "Asetilkolin", "Adrenalin", "Glutamat"],
+                correct: 2,
+                explanation: "Motor uç plakta asetilkolin salgılanır. Bu madde kasılmayı başlatır."
+            },
+            {
+                question: "Hangi hormon kalsiyumun kemikten kana geçişini düzenler?",
+                options: ["İnsülin", "Tiroksin", "Kalsitonin", "Adrenalin", "Östrojen"],
+                correct: 2,
+                explanation: "Kalsitonin ve parathormon kalsiyum dengesini düzenler. Tiroit ve paratiroit bezlerinden salgılanır."
+            },
+            {
+                question: "Aşağıdakilerden hangisi düz kas özelliği değildir?",
+                options: [
+                    "İsteğimiz dışında çalışır",
+                    "Yavaş kasılır",
+                    "Tek çekirdeklidir",
+                    "Çizgili yapıdadır",
+                    "Mide ve bağırsaklarda bulunur"
+                ],
+                correct: 3,
+                explanation: "Düz kaslar çizgili değildir. Aktin ve miyozin dağınık dizilmiştir."
+            },
+            {
+                question: "Kemik yıkımını sağlayan hücreler hangileridir?",
+                options: ["Osteositler", "Osteoblastlar", "Osteoklastlar", "Kondrositler", "Fibroblastlar"],
+                correct: 2,
+                explanation: "Osteoklastlar kemik yıkımını sağlayan hücrelerdir. Osteoblastlar yapımı sağlar."
+            },
+            {
+                question: "Hangi mineral kemik yapısında bulunmaz?",
+                options: ["Kalsiyum", "Fosfor", "Demir", "Magnezyum", "Potasyum"],
+                correct: 2,
+                explanation: "Demir kemik yapısında bulunmaz. Kanda hemoglobin yapısında bulunur."
+            },
+            {
+                question: "Kas gevşemesi sırasında Ca⁺⁺ iyonları nasıl taşınır?",
+                options: [
+                    "Difüzyonla",
+                    "Osmozla",
+                    "Aktif taşımayla",
+                    "Kolaylaştırılmış difüzyonla",
+                    "Endositozla"
+                ],
+                correct: 2,
+                explanation: "Ca⁺⁺ iyonları aktif taşımayla sarkoplazmik retikuluma geri döner. ATP harcanır."
+            },
+            {
+                question: "Hangi vitamin eksikliğinde kemikler çabuk kırılır?",
+                options: ["A vitamini", "B vitamini", "C vitamini", "D vitamini", "E vitamini"],
+                correct: 2,
+                explanation: "C vitamini eksikliğinde kemiklerin esnekliği ve dayanıklılığı azalır, çabuk kırılır."
+            },
+            {
+                question: "Aşağıdakilerden hangisi kısa kemiktir?",
+                options: ["Uyluk kemiği", "Kaburga", "Omur", "El bilek kemiği", "Kürek kemiği"],
+                correct: 3,
+                explanation: "El bilek kemikleri kısa kemiklerdir. En, boy, kalınlık yaklaşık eşittir."
+            },
+            {
+                question: "Kas tonusu nedir?",
+                options: [
+                    "Kasın tamamen gevşek olması",
+                    "Kasın tam kasılı olması",
+                    "Kasın hafif kasılı olması",
+                    "Kasın yırtılması",
+                    "Kasın şişmesi"
+                ],
+                correct: 2,
+                explanation: "Kas tonusu bilinçli durumda kasların hafif kasılı olma durumudur."
+            },
+            {
+                question: "Hangi eklem çeşidi omurlar arasında bulunur?",
+                options: ["Oynamaz eklem", "Yarı oynar eklem", "Oynar eklem", "Sabit eklem", "Tam hareketli eklem"],
+                correct: 1,
+                explanation: "Omurlar arasında yarı oynar (az oynar) eklem bulunur. Sınırlı hareket vardır."
+            },
+            {
+                question: "Kreatin fosfatın görevi nedir?",
+                options: [
+                    "Oksijen taşımak",
+                    "ATP sentezlemek",
+                    "Kas liflerini birleştirmek",
+                    "Kalsiyum depolamak",
+                    "Laktik asiti parçalamak"
+                ],
+                correct: 1,
+                explanation: "Kreatin fosfat hızlı kasılmalarda ATP sentezini sağlar. ADP'ye fosfat verir."
+            },
+            {
+                question: "Hangi kas çeşidinde çekirdekler ortadadır?",
+                options: [
+                    "Sadece iskelet kasında",
+                    "Sadece düz kasta",
+                    "Sadece kalp kasında",
+                    "Düz kas ve kalp kasında",
+                    "Tüm kaslarda"
+                ],
+                correct: 3,
+                explanation: "Düz kas ve kalp kasında çekirdek ortadadır. İskelet kasında kenardadır."
+            },
+            {
+                question: "Periostun görevi değildir?",
+                options: [
+                    "Kemik hücrelerinin oluşumu",
+                    "Kemiğin enine büyümesi",
+                    "Kemiğin onarımı",
+                    "Kan hücresi üretimi",
+                    "Sinir ve damar taşıma"
+                ],
+                correct: 3,
+                explanation: "Kan hücresi üretimi kırmızı kemik iliğinin görevidir, periostun değil."
+            },
+            {
+                question: "Fizyolojik tetanos nedir?",
+                options: [
+                    "Kasın tam gevşemesi",
+                    "Kasın sürekli kasılı kalması",
+                    "Kasın yırtılması",
+                    "Kasın şişmesi",
+                    "Kasın yorulması"
+                ],
+                correct: 1,
+                explanation: "Fizyolojik tetanos kasın gevşemeye fırsat bulamadan sürekli uyarılması sonucu kasılı kalmasıdır."
+            },
+            {
+                question: "Hangi bant sadece miyozin ipliklerinden oluşur?",
+                options: ["I bandı", "A bandı", "H bandı", "Z çizgisi", "M çizgisi"],
+                correct: 2,
+                explanation: "H bandı A bandının ortasında yer alır ve sadece miyozin ipliklerinden oluşur."
+            },
+            {
+                question: "Aşağıdakilerden hangisi kemik oluşumunu etkileyen faktörlerden değildir?",
+                options: ["Hormonlar", "Vitaminler", "Mineraller", "Genetik faktörler", "Kan basıncı"],
+                correct: 4,
+                explanation: "Kan basıncı kemik oluşumunu doğrudan etkilemez. Diğer tüm faktörler etkilidir."
+            },
+            {
+                question: "Kasılma sırasında hangi bant daralır veya kaybolur?",
+                options: [
+                    "Sadece I bandı",
+                    "Sadece H bandı",
+                    "I bandı ve H bandı",
+                    "A bandı ve I bandı",
+                    "Tüm bantlar"
+                ],
+                correct: 2,
+                explanation: "Kasılma sırasında I bandı daralır, H bandı daralır veya kaybolur. A bandı değişmez."
+            },
+            {
+                question: "Hiyalin kıkırdak nerede bulunmaz?",
+                options: [
+                    "Kaburga uçlarında",
+                    "Oynar eklem yüzeylerinde",
+                    "Soluk borusunda",
+                    "Kulak kepçesinde",
+                    "Burunda"
+                ],
+                correct: 3,
+                explanation: "Kulak kepçesinde elastik kıkırdak bulunur. Hiyalin kıkırdak diğer yerlerde bulunur."
+            },
+            {
+                question: "Kemiklerde boyuna büyümeyi sağlayan yapı hangi dönemden sonra kemikleşir?",
+                options: ["Bebeklik", "Çocukluk", "Ergenlik", "Yetişkinlik", "Yaşlılık"],
+                correct: 2,
+                explanation: "Epifiz plağı ergenlik döneminden sonra kemikleşir ve boyuna uzama durur."
+            },
+            {
+                question: "Hangi kas çeşidi kendi uyarı sistemine sahiptir?",
+                options: ["İskelet kası", "Düz kas", "Kalp kası", "Tüm kaslar", "Hiçbiri"],
+                correct: 2,
+                explanation: "Kalp kası kendi uyarı sistemine sahiptir. Sinir uyarısı olmadan da kasılabilir."
+            },
+            {
+                question: "Kas liflerinin küçükten büyüğe doğru sıralanışı nasıldır?",
+                options: [
+                    "Kas demeti → Kas lifi → Miyofibril → Aktin/miyozin",
+                    "Aktin/miyozin → Miyofibril → Kas lifi → Kas demeti",
+                    "Miyofibril → Aktin/miyozin → Kas lifi → Kas demeti",
+                    "Kas lifi → Kas demeti → Miyofibril → Aktin/miyozin",
+                    "Kas demeti → Miyofibril → Kas lifi → Aktin/miyozin"
+                ],
+                correct: 1,
+                explanation: "Sıralama: Aktin/miyozin → Miyofibril → Kas lifi → Kas demeti. En küçük yapı aktin/miyozindir."
+            },
+            {
+                question: "Hangi kıkırdak çeşidi embriyonik dönemdeki iskeleti oluşturur?",
+                options: ["Hiyalin kıkırdak", "Elastik kıkırdak", "Fibröz kıkırdak", "Kemik doku", "Kıkırdak yoktur"],
+                correct: 0,
+                explanation: "Embriyonik dönemdeki iskelet hiyalin kıkırdaktan oluşur, zamanla kemikleşir."
+            },
+            {
+                question: "Aşağıdakilerden hangisi sinerjist kaslara örnektir?",
+                options: ["Biseps-triseps", "Karın-sırt kasları", "Ön kol-arka kol", "Uyluk-baldır", "Göğüs-sırt"],
+                correct: 1,
+                explanation: "Sinerjist kaslar aynı anda kasılıp gevşeyen kaslardır. Karın ve sırt kasları örnektir."
+            },
+            {
+                question: "Kas kasılması sırasında açığa çıkan enerjinin bir kısmı neye dönüşür?",
+                options: ["Işık enerjisine", "Ses enerjisine", "Isı enerjisine", "Kimyasal enerjiye", "Potansiyel enerjiye"],
+                correct: 2,
+                explanation: "Kas kasılması sırasında ATP'den elde edilen enerjinin bir kısmı ısı enerjisine dönüşür."
+            },
+            {
+                question: "Hangi kanal Havers kanallarını birbirine bağlar?",
+                options: ["Epifiz kanalı", "Volkmann kanalları", "Medüller kanal", "Sinovyal kanal", "Periost kanalı"],
+                correct: 1,
+                explanation: "Volkmann kanalları Havers kanallarını birbirine bağlayan yan kanallardır."
+            },
+            {
+                question: "Kas kasılmasının başlaması için gerekli minimum uyarı şiddetine ne denir?",
+                options: ["Maksimum şiddet", "Eşik şiddeti", "Optimum şiddet", "Minimum şiddet", "Tetanos şiddeti"],
+                correct: 1,
+                explanation: "Eşik şiddeti kasılmayı başlatan en küçük uyarı şiddetidir. 'Ya hep ya hiç' prensibi geçerlidir."
+            }
+        ];
+
+        let userAnswers = new Array(testQuestions.length).fill(-1);
+
+        function loadTestQuestions() {
+            const container = document.getElementById('test-container');
+            container.innerHTML = '';
+            userAnswers.fill(-1);
+
+            testQuestions.forEach((q, index) => {
+                const letters = ['A', 'B', 'C', 'D', 'E'];
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-card';
+                questionDiv.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <span class="question-number">${index + 1}</span>
+                        <span class="question-text">${q.question}</span>
+                    </div>
+                    <div class="options">
+                        ${q.options.map((option, optIndex) => `
+                            <div class="option" data-q="${index}" data-opt="${optIndex}">
+                                <div class="option-letter">${letters[optIndex]}</div>
+                                <div>${option}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+            });
+
+            // Add event listeners to options
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const qIndex = parseInt(this.getAttribute('data-q'));
+                    const optIndex = parseInt(this.getAttribute('data-opt'));
+                    
+                    // Remove previous selection for this question
+                    const options = document.querySelectorAll(`.option[data-q="${qIndex}"]`);
+                    options.forEach(opt => {
+                        opt.classList.remove('selected');
+                        opt.classList.remove('correct', 'wrong');
+                    });
+                    
+                    // Mark selected option
+                    this.classList.add('selected');
+                    userAnswers[qIndex] = optIndex;
+                });
+            });
+        }
+
+        document.getElementById('submit-test').addEventListener('click', () => {
+            let score = 0;
+            const total = testQuestions.length;
+
+            // Check answers
+            testQuestions.forEach((q, index) => {
+                const options = document.querySelectorAll(`.option[data-q="${index}"]`);
+                if (userAnswers[index] === q.correct) {
+                    score++;
+                    options[q.correct].classList.add('correct');
+                } else if (userAnswers[index] !== -1) {
+                    options[userAnswers[index]].classList.add('wrong');
+                    options[q.correct].classList.add('correct');
+                } else {
+                    // If not answered, still show correct answer
+                    options[q.correct].classList.add('correct');
+                }
+            });
+
+            // Show results
+            const resultDiv = document.getElementById('test-result');
+            document.getElementById('score').textContent = `${score}`;
+            
+            let message = '';
+            if (score === total) {
+                message = '🎉 MÜKEMMEL! Tüm soruları doğru cevapladınız! Konuyu tamamen öğrenmişsiniz.';
+            } else if (score >= total * 0.85) {
+                message = '👏 ÇOK İYİ! Konuyu çok iyi anlamışsınız. Sadece birkaç detay üzerinde çalışın.';
+            } else if (score >= total * 0.70) {
+                message = '👍 İYİ! Konuyu anlamışsınız ama bazı noktaları tekrar etmeniz faydalı olacaktır.';
+            } else if (score >= total * 0.50) {
+                message = '📚 ORTA SEVİYE! Konunun temellerini anlamışsınız ama detaylar üzerinde çalışmalısınız.';
+            } else {
+                message = '📖 GELİŞTİRME GEREKİYOR! Konuyu tekrar çalışmanızı öneririm. Bilgi kartları ve özetlerden başlayın.';
+            }
+            
+            document.getElementById('test-message').textContent = message;
+            
+            // Show detailed result
+            const correctCount = score;
+            const wrongCount = userAnswers.filter((ans, idx) => ans !== -1 && ans !== testQuestions[idx].correct).length;
+            const emptyCount = userAnswers.filter(ans => ans === -1).length;
+            
+            document.getElementById('detailed-result').innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0;">
+                    <div style="background: #28a745; padding: 15px; border-radius: 8px; color: white;">
+                        <div style="font-size: 1.5rem; font-weight: bold;">${correctCount}</div>
+                        <div>Doğru</div>
+                    </div>
+                    <div style="background: #dc3545; padding: 15px; border-radius: 8px; color: white;">
+                        <div style="font-size: 1.5rem; font-weight: bold;">${wrongCount}</div>
+                        <div>Yanlış</div>
+                    </div>
+                    <div style="background: #6c757d; padding: 15px; border-radius: 8px; color: white;">
+                        <div style="font-size: 1.5rem; font-weight: bold;">${emptyCount}</div>
+                        <div>Boş</div>
+                    </div>
+                </div>
+                <div style="font-size: 1.1rem; opacity: 0.9;">
+                    Başarı Oranı: <strong>${Math.round((score/total)*100)}%</strong>
+                </div>
+            `;
+            
+            resultDiv.style.display = 'block';
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        document.getElementById('restart-test').addEventListener('click', () => {
+            loadTestQuestions();
+            document.getElementById('test-result').style.display = 'none';
+        });
+
+        document.getElementById('clear-selections').addEventListener('click', () => {
+            loadTestQuestions();
+        });
+
+        // Keyboard shortcuts for flashcards
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('flashcard-section').classList.contains('active')) {
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        if (currentCardIndex > 0) {
+                            currentCardIndex--;
+                            loadCard();
+                        }
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        if (currentCardIndex < totalCards - 1) {
+                            currentCardIndex++;
+                            loadCard();
+                        }
+                        break;
+                    case ' ':
+                        e.preventDefault();
+                        flashcardElement.classList.toggle('flipped');
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
